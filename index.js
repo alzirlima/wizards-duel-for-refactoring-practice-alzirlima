@@ -13,6 +13,4 @@ app.use('/api', charactersRoute);
 app.use('/api', spellsRoute);
 app.use('/api', gameRoute);
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+app.listen(PORT);

@@ -4,7 +4,6 @@ const { SPELLS_COUNT } = require('../constants');
 
 const router = express.Router();
 
-// Função auxiliar para calcular o dano ou cura baseado na categoria do feitiço
 const calculateDamage = (category) => {
   const damageMap = {
     Curse: 90,
@@ -14,9 +13,9 @@ const calculateDamage = (category) => {
     Charm: 45,
     Transfiguration: 40,
     'Counter-spell': 35,
-    'Healing spell': -40, // Valores negativos representam cura no front-end
+    'Healing spell': -40,
   };
-  return damageMap[category] || 30; // 30 é o valor padrão caso a categoria não conste no mapa
+  return damageMap[category] || 30;
 };
 
 router.get('/spells', async (req, res) => {
@@ -26,8 +25,7 @@ router.get('/spells', async (req, res) => {
 
     spellsData.forEach((spell) => {
       const { attributes } = spell;
-      
-      // Ignora feitiços sem nome (mantendo a regra original)
+
       if (!attributes.name) return;
 
       const damage = calculateDamage(attributes.category);
@@ -42,12 +40,10 @@ router.get('/spells', async (req, res) => {
       });
     });
 
-    // Embaralha a lista e retorna apenas a quantidade definida nas constantes
     const shuffledSpells = shuffleArray(spellsList);
     res.json({ spells: shuffledSpells.slice(0, SPELLS_COUNT) });
   } catch (error) {
-    console.error('Erro ao buscar feitiços:', error);
-    res.status(500).json({ error: 'Erro interno ao buscar a lista de feitiços' });
+    res.status(500).json({ error: 'Erro ao buscar feitiços' });
   }
 });
 

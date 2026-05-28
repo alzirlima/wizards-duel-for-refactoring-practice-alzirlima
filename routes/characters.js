@@ -17,7 +17,9 @@ router.get('/pack', async (req, res) => {
       const power = calculatePower(attributes.house);
       const magic = calculateMagic(attributes.species);
       const defense = calculateDefense(attributes.ancestry);
-      const hitPoints = defense + Math.floor(Math.random() * HP_RANDOM_MULTIPLIER) + DEFAULT_HP_BASE;
+      
+      const randomHp = Math.floor(Math.random() * HP_RANDOM_MULTIPLIER);
+      const hitPoints = defense + randomHp + DEFAULT_HP_BASE;
 
       characterList.push({
         id: character.id,
@@ -37,8 +39,7 @@ router.get('/pack', async (req, res) => {
     const shuffledCharacters = shuffleArray(characterList);
     res.json({ cards: shuffledCharacters.slice(0, PACK_SIZE) });
   } catch (error) {
-    console.error('Erro ao buscar personagens:', error);
-    res.status(500).json({ error: 'Erro interno ao buscar o pack de personagens' });
+    res.status(500).json({ error: 'Erro ao buscar o pack de personagens' });
   }
 });
 
