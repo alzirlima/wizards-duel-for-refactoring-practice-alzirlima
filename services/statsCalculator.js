@@ -1,3 +1,5 @@
+const { DEFAULT_STAT_VALUE } = require('../constants');
+
 const calculatePower = (house) => {
   const powerMap = {
     Gryffindor: 90,
@@ -5,7 +7,7 @@ const calculatePower = (house) => {
     Hufflepuff: 75,
     Ravenclaw: 80,
   };
-  return powerMap[house] || 50;
+  return powerMap[house] || DEFAULT_STAT_VALUE;
 };
 
 const calculateMagic = (species) => {
@@ -19,7 +21,7 @@ const calculateMagic = (species) => {
     vampire: 87,
     centaur: 78,
   };
-  return magicMap[species] || 50;
+  return magicMap[species] || DEFAULT_STAT_VALUE;
 };
 
 const calculateDefense = (ancestry) => {
@@ -30,7 +32,7 @@ const calculateDefense = (ancestry) => {
     muggle: 40,
     squib: 35,
   };
-  return defenseMap[ancestry] || 50;
+  return defenseMap[ancestry] || DEFAULT_STAT_VALUE;
 };
 
 module.exports = {

@@ -1,6 +1,6 @@
 const express = require('express');
 const { fetchSpells, shuffleArray } = require('../services/potterApi');
-const { SPELLS_COUNT } = require('../constants');
+const { SPELLS_COUNT, DEFAULT_SPELL_DAMAGE } = require('../constants');
 
 const router = express.Router();
 
@@ -15,7 +15,7 @@ const calculateDamage = (category) => {
     'Counter-spell': 35,
     'Healing spell': -40,
   };
-  return damageMap[category] || 30;
+  return damageMap[category] || DEFAULT_SPELL_DAMAGE;
 };
 
 router.get('/spells', async (req, res) => {

@@ -19,6 +19,7 @@ const GAME_CONFIG = {
   DELAY_HIT_MS: 600,
   DELAY_DEATH_MS: 700,
   DELAY_CPU_TURN_MS: 800,
+  MAGIC_DIVISOR: 100,
 };
 
 const state = {
@@ -120,7 +121,8 @@ const castSpell = async (spellIndex) => {
 
   const randomMod = Math.random() * GAME_CONFIG.RANDOM_DAMAGE_MODIFIER;
   const damageMultiplier = randomMod + GAME_CONFIG.BASE_DAMAGE_MODIFIER;
-  const playerDamage = Math.floor(spell.damage * (playerChar.magic / 100) * damageMultiplier);
+  const magicRatio = playerChar.magic / GAME_CONFIG.MAGIC_DIVISOR;
+  const playerDamage = Math.floor(spell.damage * magicRatio * damageMultiplier);
 
   if (spell.damage < 0) {
     const healAmount = Math.abs(playerDamage);
@@ -143,7 +145,8 @@ const castSpell = async (spellIndex) => {
   const cpuSpell = state.spells[cpuSpellIndex];
   const cpuRandomMod = Math.random() * GAME_CONFIG.RANDOM_DAMAGE_MODIFIER;
   const cpuMultiplier = cpuRandomMod + GAME_CONFIG.BASE_DAMAGE_MODIFIER;
-  const cpuDamage = Math.floor(cpuSpell.damage * (cpuChar.magic / 100) * cpuMultiplier);
+  const cpuMagicRatio = cpuChar.magic / GAME_CONFIG.MAGIC_DIVISOR;
+  const cpuDamage = Math.floor(cpuSpell.damage * cpuMagicRatio * cpuMultiplier);
 
   if (cpuSpell.damage < 0) {
     const cpuHeal = Math.abs(cpuDamage);
