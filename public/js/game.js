@@ -114,10 +114,10 @@ const castSpell = async (spellIndex) => {
   renderSpellsList(state.playerSpells, false);
 
   const spell = state.playerSpells[spellIndex];
-  const pIdx = getActiveCharacterIndex(state.playerDeck);
-  const cIdx = getActiveCharacterIndex(state.cpuDeck);
-  const playerChar = state.playerDeck[pIdx];
-  const cpuChar = state.cpuDeck[cIdx];
+  const playerActiveIndex = getActiveCharacterIndex(state.playerDeck);
+  const cpuActiveIndex = getActiveCharacterIndex(state.cpuDeck);
+  const playerChar = state.playerDeck[playerActiveIndex];
+  const cpuChar = state.cpuDeck[cpuActiveIndex];
 
   const randomMod = Math.random() * GAME_CONFIG.RANDOM_DAMAGE_MODIFIER;
   const damageMultiplier = randomMod + GAME_CONFIG.BASE_DAMAGE_MODIFIER;
@@ -164,15 +164,15 @@ const castSpell = async (spellIndex) => {
   }
 
   await sleep(GAME_CONFIG.DELAY_DEATH_MS);
-  processTurnResults(pIdx, cIdx); // eslint-disable-line no-use-before-define
+  processTurnResults(playerActiveIndex, cpuActiveIndex); // eslint-disable-line no-use-before-define
 };
 
 const attachSpellListeners = () => {
   const buttons = document.querySelectorAll('.spell-btn');
   buttons.forEach((button) => {
     button.addEventListener('click', (event) => {
-      const idx = event.currentTarget.getAttribute('data-spell-idx');
-      castSpell(parseInt(idx, 10));
+      const spellIndex = event.currentTarget.getAttribute('data-spell-idx');
+      castSpell(parseInt(spellIndex, 10));
     });
   });
 };
@@ -278,21 +278,21 @@ const endGame = () => {
   const overScreen = document.getElementById('screen-over');
   const glyph = document.getElementById('overGlyph');
   const title = document.getElementById('overTitle');
-  const sub = document.getElementById('overSub');
+  const subtitle = document.getElementById('overSub');
   const score = document.getElementById('overScore');
 
   if (state.scorePlayer > state.scoreCpu) {
     glyph.textContent = '🏆';
     title.textContent = 'Vitória!';
-    sub.textContent = 'Você dominou o duelo!';
+    subtitle.textContent = 'Você dominou o duelo!';
   } else if (state.scoreCpu > state.scorePlayer) {
     glyph.textContent = '💀';
     title.textContent = 'Derrota';
-    sub.textContent = 'O CPU foi mais poderoso desta vez.';
+    subtitle.textContent = 'O CPU foi mais poderoso desta vez.';
   } else {
     glyph.textContent = '✦';
     title.textContent = 'Empate';
-    sub.textContent = 'Bruxos igualmente poderosos.';
+    subtitle.textContent = 'Bruxos igualmente poderosos.';
   }
 
   score.textContent = `Você ${state.scorePlayer}  ×  ${state.scoreCpu} CPU`;
@@ -300,22 +300,22 @@ const endGame = () => {
 };
 
 const loadGame = async () => {
-  const bar = document.getElementById('loadBar');
+  const progressBar = document.getElementById('loadBar');
   const msgElement = document.getElementById('loadMsg');
 
   msgElement.textContent = 'Invocando personagens...';
-  bar.style.width = '20%';
+  progressBar.style.width = '20%';
 
   const packData = await fetchPackData();
   state.pack = packData.cards || [];
 
-  bar.style.width = '55%';
+  progressBar.style.width = '55%';
   msgElement.textContent = 'Consultando o livro de feitiços...';
 
   const spellData = await fetchSpellsData();
   state.spells = spellData.spells || [];
 
-  bar.style.width = '85%';
+  progressBar.style.width = '85%';
   msgElement.textContent = 'Preparando o adversário...';
 
   const cpuData = await fetchCpuDeckData();
@@ -324,7 +324,7 @@ const loadGame = async () => {
   const shuffledSpells = shuffleArray(state.spells);
   state.playerSpells = shuffledSpells.slice(0, GAME_CONFIG.STARTING_SPELLS_COUNT);
 
-  bar.style.width = '100%';
+  progressBar.style.width = '100%';
   msgElement.textContent = 'Pronto!';
 
   setTimeout(() => {
