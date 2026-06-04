@@ -161,7 +161,7 @@ const castSpell = async (spellIndex) => {
   }
 
   await sleep(GAME_CONFIG.DELAY_DEATH_MS);
-  processTurnResults(); // eslint-disable-line no-use-before-define
+  processTurnResults(pIdx, cIdx); // eslint-disable-line no-use-before-define
 };
 
 const attachSpellListeners = () => {
@@ -220,20 +220,18 @@ const startBattle = () => {
   setBattleStatus('Escolha um feitiço para atacar!');
 };
 
-const processTurnResults = async () => {
-  const playerActiveIndex = getActiveCharacterIndex(state.playerDeck);
-  const cpuActiveIndex = getActiveCharacterIndex(state.cpuDeck);
+const processTurnResults = async (playerAttackedIndex, cpuAttackedIndex) => {
   let isRoundOver = false;
 
-  if (playerActiveIndex >= 0 && state.playerDeck[playerActiveIndex].hp <= 0) {
-    logBattleMessage(`💀 ${state.playerDeck[playerActiveIndex].name} derrotado!`, 'lose');
+  if (state.playerDeck[playerAttackedIndex].hp <= 0) {
+    logBattleMessage(`💀 ${state.playerDeck[playerAttackedIndex].name} derrotado!`, 'lose');
     state.scoreCpu += 1;
     document.getElementById('scoreC').textContent = state.scoreCpu;
     isRoundOver = true;
   }
 
-  if (cpuActiveIndex >= 0 && state.cpuDeck[cpuActiveIndex].hp <= 0) {
-    logBattleMessage(`🏆 ${state.cpuDeck[cpuActiveIndex].name} derrotado!`, 'win');
+  if (state.cpuDeck[cpuAttackedIndex].hp <= 0) {
+    logBattleMessage(`🏆 ${state.cpuDeck[cpuAttackedIndex].name} derrotado!`, 'win');
     state.scorePlayer += 1;
     document.getElementById('scoreP').textContent = state.scorePlayer;
     isRoundOver = true;
