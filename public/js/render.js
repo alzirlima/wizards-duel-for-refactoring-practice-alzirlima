@@ -61,7 +61,7 @@ export const renderCardHtml = (character) => {
   const healthPercentage = character.hp / character.maxHp;
   const houseColor = getHouseColor(character.house);
   const houseEmoji = getHouseEmoji(character.house);
-  
+
   const fallback = 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/'
     + 'ac/No_image_available.svg/300px-No_image_available.svg.png';
 
@@ -120,13 +120,13 @@ export const renderDeckBadges = (deck, activeIndex, elementId) => {
 
 export const renderSpellsList = (spells, isEnabled) => {
   const spellContainer = document.getElementById('spellList');
-  
+
   const spellsHtml = spells.map((spell, index) => {
     const isHeal = spell.damage < 0;
     const dmgLabel = isHeal ? `💚 +${Math.abs(spell.damage)} HP` : `💀 ${spell.damage} dmg`;
     const dmgClass = isHeal ? 'spell-dmg heal' : 'spell-dmg attack';
     const disabledAttr = isEnabled ? '' : 'disabled';
-    
+
     // Substituimos o onclick direto pelo atributo data-spell-idx
     return `
       <button class="spell-btn" data-spell-idx="${index}" ${disabledAttr}>

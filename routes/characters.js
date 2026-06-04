@@ -17,7 +17,7 @@ router.get('/pack', async (req, res) => {
       const power = calculatePower(attributes.house);
       const magic = calculateMagic(attributes.species);
       const defense = calculateDefense(attributes.ancestry);
-      
+
       const randomHp = Math.floor(Math.random() * HP_RANDOM_MULTIPLIER);
       const hitPoints = defense + randomHp + DEFAULT_HP_BASE;
 

@@ -62,34 +62,34 @@ const toggleDraftCard = (index) => {
 const renderPackCards = () => {
   const grid = document.getElementById('packGrid');
   grid.innerHTML = '';
-  
+
   state.pack.forEach((character, index) => {
     const isSelected = state.selectedCards.includes(index);
     const cardContainer = document.createElement('div');
     cardContainer.className = `card ${isSelected ? 'selected' : ''}`;
     cardContainer.innerHTML = renderCardHtml(character);
     cardContainer.setAttribute('data-idx', index);
-    
+
     // Configurando evento limpo sem window/onclick
     cardContainer.addEventListener('click', () => {
       toggleDraftCard(index);
     });
-    
+
     grid.appendChild(cardContainer);
   });
-  
+
   document.getElementById('draftCount').textContent = state.selectedCards.length;
-  
+
   const canConfirm = state.selectedCards.length >= GAME_CONFIG.MAX_DRAFT_CARDS;
   document.getElementById('btnConfirmDraft').disabled = !canConfirm;
 };
 
 const rerollPack = async () => {
   state.selectedCards = [];
-  
+
   const rerollMessage = '<div style="text-align:center;padding:40px;'
     + 'color:var(--parchment-dark);grid-column:1/-1">Invocando novos bruxos...</div>';
-  
+
   document.getElementById('packGrid').innerHTML = rerollMessage;
   const data = await fetchPackData();
   state.pack = data.cards;
@@ -197,7 +197,7 @@ const renderBattleState = () => {
 
   renderDeckBadges(state.playerDeck, playerActiveIndex, 'playerDeckBadges');
   renderDeckBadges(state.cpuDeck, cpuActiveIndex, 'cpuDeckBadges');
-  
+
   renderSpellsList(state.playerSpells, !state.isWaiting);
   attachSpellListeners();
 };
@@ -231,7 +231,7 @@ const processTurnResults = async () => {
     document.getElementById('scoreC').textContent = state.scoreCpu;
     isRoundOver = true;
   }
-  
+
   if (cpuActiveIndex >= 0 && state.cpuDeck[cpuActiveIndex].hp <= 0) {
     logBattleMessage(`🏆 ${state.cpuDeck[cpuActiveIndex].name} derrotado!`, 'win');
     state.scorePlayer += 1;
@@ -293,7 +293,7 @@ const endGame = () => {
     title.textContent = 'Empate';
     sub.textContent = 'Bruxos igualmente poderosos.';
   }
-  
+
   score.textContent = `Você ${state.scorePlayer}  ×  ${state.scoreCpu} CPU`;
   overScreen.classList.add('active');
 };
@@ -346,22 +346,15 @@ const restartGame = () => {
   loadingElement.style.display = 'flex';
   loadingElement.classList.remove('fade-out');
   document.getElementById('loadBar').style.width = '0%';
-  
+
   showScreen('');
   loadGame();
 };
 
-// Vinculando eventos nativamente (Sem usar global window ou onclick no HTML)
+// Vincula eventos via addEventListener (sem onclick inline no HTML)
 document.getElementById('btnConfirmDraft').addEventListener('click', confirmDraft);
 document.getElementById('btnNext').addEventListener('click', nextRound);
-
-// Note que o HTML possui botões cujo id precisará corresponder a estes:
-// Crie/Adicione id="btnReroll" no HTML: <button id="btnReroll" class="btn">🎲 Novo Pack</button>
-const btnReroll = document.getElementById('btnReroll');
-if (btnReroll) btnReroll.addEventListener('click', rerollPack);
-
-// Crie/Adicione id="btnRestart" no HTML: <button id="btnRestart" class="btn btn-lg">⚡ Jogar Novamente</button>
-const btnRestart = document.getElementById('btnRestart');
-if (btnRestart) btnRestart.addEventListener('click', restartGame);
+document.getElementById('btnReroll').addEventListener('click', rerollPack);
+document.getElementById('btnRestart').addEventListener('click', restartGame);
 
 loadGame();
