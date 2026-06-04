@@ -26,15 +26,28 @@ Este documento descreve os problemas encontrados no código original e as decis�
 
 ### 2.1. Extração de constantes
 
-Criado `constants.js` na raiz com todos os números mágicos nomeados em `UPPER_SNAKE_CASE`: `PORT`, `POTTER_API_URL`, `MAX_PAGES`, `PAGE_SIZE`, `PACK_SIZE`, `CPU_DECK_SIZE`, `SPELLS_COUNT`, `DEFAULT_HP_BASE`, `HP_RANDOM_MULTIPLIER`.
+Criado `constants.js` na raiz com todos os números mágicos nomeados em `UPPER_SNAKE_CASE`: `PORT`, `POTTER_API_URL`, `MAX_PAGES`, `PAGE_SIZE`, `PACK_SIZE`, `CPU_DECK_SIZE`, `SPELLS_COUNT`, `DEFAULT_HP_BASE`, `HP_RANDOM_MULTIPLIER`, `DEFAULT_STAT_VALUE`, `DEFAULT_SPELL_DAMAGE`.
+
+No front-end, a constante `MAGIC_DIVISOR` foi adicionada ao objeto `GAME_CONFIG` em `public/js/game.js` para substituir a divisão `/ 100` usada no cálculo de dano.
 
 ### 2.2. Renomeação semântica
 
-Variáveis obscuras renomeadas em todo o back-end e front-end. Exemplos: `pg` → `randomPage`, `d`/`r` → `response`/`responseData`, `tmp` → `characterList`/`spellsList`, `a`/`c` → `attributes`/`character`, `pw`/`mg`/`df` → `power`/`magic`/`defense`, `pIdx`/`cIdx` → `playerActiveIndex`/`cpuActiveIndex`, `pDmg` → `playerDamage`.
+Variáveis obscuras renomeadas em todo o back-end e front-end. Exemplos:
+
+- `pg` -> `randomPage`
+- `d`/`r` -> `response`/`responseData`
+- `tmp` -> `characterList`/`spellsList`
+- `a`/`c` -> `attributes`/`character`
+- `pw`/`mg`/`df` -> `power`/`magic`/`defense`
+- `pIdx`/`cIdx` -> `playerActiveIndex`/`cpuActiveIndex`
+- `pDmg` -> `playerDamage`
+- `idx` -> `spellIndex`
+- `sub` -> `subtitle`
+- `bar` -> `progressBar`
 
 ### 2.3. Separação de responsabilidades (back-end)
 
-- `services/potterApi.js`: comunicação com a PotterDB API (`fetchCharacters`, `fetchSpells`) e utilitário `shuffleArray` (Fisher–Yates).
+- `services/potterApi.js`: comunicação com a PotterDB API (`fetchCharacters`, `fetchSpells`) e utilitário `shuffleArray` (Fisher-Yates).
 - `services/statsCalculator.js`: funções puras `calculatePower`, `calculateMagic`, `calculateDefense`.
 - `routes/characters.js`, `routes/spells.js`, `routes/game.js`: handlers Express, cada um responsável por um recurso.
 - `index.js`: passa a apenas instanciar o Express, registrar middlewares e montar as rotas.
@@ -54,7 +67,11 @@ A duplicação entre `/api/pack` e `/api/cpu-deck` foi eliminada — ambas agora
 - Concatenações de HTML (`html += '<div>' + x + '</div>'`) foram substituídas por **template literals** (`` `<div>${x}</div>` ``).
 - Os atributos `onclick="..."` foram removidos do HTML; os bindings foram feitos em `game.js` via `addEventListener` (`btnConfirmDraft`, `btnNext`, `btnReroll`, `btnRestart`).
 
-### 2.5. Configuração do ESLint
+### 2.5. Correção de bug funcional
+
+Durante a auditoria final, foi identificado que a função `processTurnResults` em `public/js/game.js` consultava o índice do próximo personagem vivo em vez do índice do personagem que recebeu o ataque na rodada. Isso fazia o placar nunca incrementar, resultando em empate sempre. A função passou a receber `playerAttackedIndex` e `cpuAttackedIndex` como parâmetros explícitos, passados pelo `castSpell`.
+
+### 2.6. Configuração do ESLint
 
 - `.eslintrc.json` configurado com `extends: airbnb-base`.
 - A regra `linebreak-style` foi desabilitada para evitar erros de CRLF/LF em ambiente Windows.
@@ -63,17 +80,21 @@ A duplicação entre `/api/pack` e `/api/cpu-deck` foi eliminada — ambas agora
   - `parserOptions: { sourceType: 'module', ecmaVersion: 2022 }` — habilita `import`/`export`.
   - `import/extensions` configurada como `['error', 'always', { ignorePackages: true }]` — módulos ES nativos do browser exigem extensão `.js` nos imports, regra que diverge do padrão Airbnb (que assume um bundler).
 
-### 2.6. Histórico de commits
+### 2.7. Histórico de commits
 
 A refatoração foi dividida em commits por etapa, permitindo rastrear cada decisão:
 
 1. `chore(eslint)`: configuração do ESLint Airbnb, overrides do front e desabilitação de `linebreak-style` para cross-platform.
 2. `refactor(front)`: separação do CSS inline para `public/css/style.css`.
 3. `refactor(front)`: separação do JS inline, módulos ES e `addEventListener`.
-4. `style`: correção automática de trailing spaces, `eol-last` e limpeza de comentários obsoletos.
+4. `style`: correção de trailing spaces, `eol-last` e limpeza de comentários obsoletos.
+5. `fix(front)`: ativação efetiva do módulo ES (remoção do `<script>` inline que havia sido reintroduzido no HTML).
+6. `fix(game)`: correção do placar em `processTurnResults`.
+7. `refactor`: extração dos números mágicos restantes para `constants.js` e `GAME_CONFIG`.
+8. `refactor`: renomeação de variáveis opacas restantes (`pIdx`, `cIdx`, `idx`, `sub`, `bar`) no `game.js`.
 
 ## 3. Verificação final
 
 - `npm run lint` retorna **0 erros**.
 - `npm start` inicia o servidor na porta 3000.
-- Todas as telas do jogo (loading, draft, batalha, fim) continuam funcionando como antes da refatoração — nenhum comportamento visível foi alterado.
+- Todas as telas do jogo (loading, draft, batalha, fim) funcionam corretamente, com o placar incrementando como esperado e o resultado final refletindo o vencedor real do duelo.
