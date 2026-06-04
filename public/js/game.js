@@ -1,4 +1,4 @@
-import { fetchPackData, fetchSpellsData, fetchCpuDeckData } from './api';
+import { fetchPackData, fetchSpellsData, fetchCpuDeckData } from './api.js';
 import {
   renderCardHtml,
   renderDeckBadges,
@@ -7,7 +7,7 @@ import {
   setBattleStatus,
   showScreen,
   animateElement,
-} from './render';
+} from './render.js';
 
 const GAME_CONFIG = {
   MAX_DRAFT_CARDS: 2,
