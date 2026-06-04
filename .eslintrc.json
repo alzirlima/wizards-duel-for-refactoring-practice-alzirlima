@@ -1,8 +1,23 @@
-{
-     "rules": {},
-     "env": {
-            "node": true,
-            "es2021": true
+﻿{
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": "airbnb-base",
+  "rules": {
+    "linebreak-style": "off"
+  },
+  "overrides": [
+    {
+      "files": ["public/js/**/*.js"],
+      "env": { "browser": true, "node": false },
+      "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": 2022
       },
-      "extends": "airbnb-base"
+      "rules": {
+        "import/extensions": ["error", "always", { "ignorePackages": true }]
+      }
+    }
+  ]
 }
